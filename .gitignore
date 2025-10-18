@@ -1,0 +1,59 @@
+# Python / cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Build / output
+build*
+CMakeFiles/
+compile_commands.json
+sdkconfig*
+!sdkconfig.defaults
+
+# Manifest / component manager lock / managed directory
+dependencies.lock
+managed_components/
+.component_hash   # sometimes used in component workflows (see esp-idf issue discussions) :contentReference[oaicite:0]{index=0}
+
+# Test / CI artifacts
+.pytest_cache/
+pytest_embedded_log/
+build_summary_*.xml
+app_info_*.txt
+size_info_*.txt
+
+# Logs / reports
+*.log
+*.lst
+*.map
+*.bin
+*.elf
+*.hex
+*.out
+
+# Editor / IDE / OS junk
+*.swp
+*.swo
+*.swn
+*.suo
+*.user
+*.userprefs
+*.vscode/
+*.idea/
+*.cproject
+*.project
+*.settings/
+*.metadata/
+*.launch
+.clangd
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Misc temporary files
+*.tmp
+*.temp
+*.bak
+*.cache
+*.cmake
