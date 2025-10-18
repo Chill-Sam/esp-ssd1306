@@ -1,0 +1,9 @@
+version: "1.0.0"
+description: "SSD1306 OLED driver for ESP-IDF"
+url: "https://github.com/Chill-Sam/esp-ssd1306"
+targets: [esp32, esp32s2, esp32s3, esp32c3]
+license: "MIT"
+dependencies:
+  idf: ">=5.3"
+maintainers:
+  - "Jonathan Wåhrenberg <jonathan@wahrenberg.com>"
