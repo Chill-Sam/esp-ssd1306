@@ -1,0 +1,12 @@
+## IDF Component Manager Manifest File
+#
+dependencies:
+  ## Required IDF version
+  idf:
+    version: ">=5.3.0"
+
+  chill-sam/esp-ssd1306:
+    version: "*"
+
+    ## Override for local development.
+    override_path: '../../../'
