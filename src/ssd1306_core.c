@@ -115,6 +115,40 @@ static inline void plot_if_visible(struct ssd1306_t *d, int x, int y) {
         draw_pixel_fast(d, x, y, true);
 }
 
+static inline void draw_glyph_scaled_nolock(struct ssd1306_t     *d,
+                                            const ssd1306_font_t *f, int x0,
+                                            int y0, unsigned char ch, bool on,
+                                            int scale) {
+    if (ch < f->first || ch > f->last)
+        return;
+    const int      gw    = f->width;
+    const int      gh    = f->height;
+    const uint8_t *glyph = &f->bitmap[(size_t)(ch - f->first) * gw];
+
+    for (int cx = 0; cx < gw; ++cx) {
+        uint8_t col = glyph[cx];
+        if (!col)
+            continue;
+        for (int ry = 0; ry < gh; ++ry) {
+            if (col & (uint8_t)(1u << ry)) {
+                const int base_x = x0 + cx * scale;
+                const int base_y = y0 + ry * scale;
+                for (int sx = 0; sx < scale; ++sx) {
+                    const int px = base_x + sx;
+                    if ((unsigned)px >= d->width)
+                        continue;
+                    for (int sy = 0; sy < scale; ++sy) {
+                        const int py = base_y + sy;
+                        if ((unsigned)py >= d->height)
+                            continue;
+                        draw_pixel_fast(d, px, py, on);
+                    }
+                }
+            }
+        }
+    }
+}
+
 esp_err_t ssd1306_clear(ssd1306_handle_t h) {
     struct ssd1306_t *d = h;
     if (!d)
@@ -606,6 +640,219 @@ esp_err_t ssd1306_draw_text_scaled(ssd1306_handle_t h, int x, int y,
     if (bx1 >= bx0 && by1 >= by0)
         mark_dirty(d, bx0, by0, bx1, by1);
 
+    UNLOCK(d);
+    return ESP_OK;
+}
+
+esp_err_t ssd1306_draw_text_wrapped(ssd1306_handle_t h, int x, int y, int w,
+                                    int hgt, const char *text, bool on) {
+    return ssd1306_draw_text_wrapped_scaled(h, x, y, w, hgt, text, on, 1);
+}
+
+esp_err_t ssd1306_draw_text_wrapped_scaled(ssd1306_handle_t h, int x, int y,
+                                           int w, int hgt, const char *text,
+                                           bool on, int scale) {
+    struct ssd1306_t *d = (struct ssd1306_t *)h;
+    if (!d || !text)
+        return ESP_ERR_INVALID_STATE;
+    if (w <= 0 || hgt <= 0 || scale < 1)
+        return ESP_ERR_INVALID_ARG;
+
+    LOCK(d);
+    if (!d->initialized || !d->font) {
+        UNLOCK(d);
+        return ESP_ERR_INVALID_STATE;
+    }
+
+    const ssd1306_font_t *f     = d->font;
+    const int             gw    = (int)f->width * scale;
+    const int             gh    = (int)f->height * scale;
+    const int             adv   = gw + 1; // SSD1306_TEXT_HSPC == 1
+    const int             ladv  = gh + 1; // SSD1306_TEXT_VSPC == 1
+    const int             x_end = x + w;
+    const int             y_end = y + hgt;
+
+    int                   cur_x = x;
+    int                   cur_y = y;
+
+    // Track a single dirty bbox
+    bool        touched = false;
+    int         bx0 = x, by0 = y, bx1 = x - 1, by1 = y - 1;
+
+    const char *p = text;
+
+    while (*p && cur_y + gh <= y_end) {
+        // Begin-of-line: count visual line and optionally skip leading spaces
+        if (cur_x == x) {
+            // skip spaces at line start
+            while (*p == ' ')
+                ++p;
+            if (!*p)
+                break;
+        }
+
+        // Explicit newline
+        if (*p == '\n') {
+            cur_x = x;
+            cur_y += ladv;
+            ++p;
+            continue;
+        }
+
+        // Measure next word [wstart, wend)
+        const char *wstart = p;
+        while (*p && *p != ' ' && *p != '\n')
+            ++p;
+        const char *wend      = p;
+        const int   word_cols = (int)(wend - wstart);
+        const int   word_px   = (word_cols > 0) ? (word_cols * adv - 1)
+                                                : 0; // minus last extra space
+
+        // Multiple spaces mid-line → emit one if it fits, else wrap
+        if (word_cols == 0 && *p == ' ') {
+            if (cur_x + adv <= x_end) {
+                draw_glyph_scaled_nolock(d, f, cur_x, cur_y, (unsigned char)' ',
+                                         on, scale);
+                if (!touched) {
+                    bx0     = cur_x;
+                    by0     = cur_y;
+                    touched = true;
+                }
+                cur_x += adv;
+                // expand bbox
+                int gx1 = cur_x - 1, gy1 = cur_y + gh - 1;
+                if (gx1 > bx1)
+                    bx1 = gx1;
+                if (gy1 > by1)
+                    by1 = gy1;
+                ++p; // consume one space
+            } else {
+                cur_x = x;
+                cur_y += ladv;
+            }
+            continue;
+        }
+
+        if (word_cols == 0)
+            continue; // was newline or end (newline handled above)
+
+        // If word doesn't fit at current x…
+        if (cur_x + word_px > x_end) {
+            // If it would fit on a fresh line, wrap and PRINT IT NOW.
+            if (word_px <= w) {
+                cur_x = x;
+                cur_y += ladv;
+                if (cur_y + gh > y_end)
+                    break;
+
+                for (const char *q = wstart; q < wend; ++q) {
+                    draw_glyph_scaled_nolock(d, f, cur_x, cur_y,
+                                             (unsigned char)*q, on, scale);
+                    if (!touched) {
+                        bx0     = cur_x;
+                        by0     = cur_y;
+                        touched = true;
+                    }
+                    cur_x += adv;
+                }
+                // bbox expand
+                {
+                    int gx1 = cur_x - 1, gy1 = cur_y + gh - 1;
+                    if (gx1 > bx1)
+                        bx1 = gx1;
+                    if (gy1 > by1)
+                        by1 = gy1;
+                }
+                // Emit one trailing space if present and fits
+                if (*p == ' ' && cur_x + adv <= x_end) {
+                    draw_glyph_scaled_nolock(d, f, cur_x, cur_y,
+                                             (unsigned char)' ', on, scale);
+                    cur_x += adv;
+                    int gx1 = cur_x - 1, gy1 = cur_y + gh - 1;
+                    if (!touched) {
+                        bx0     = cur_x;
+                        by0     = cur_y;
+                        touched = true;
+                    }
+                    if (gx1 > bx1)
+                        bx1 = gx1;
+                    if (gy1 > by1)
+                        by1 = gy1;
+                    ++p; // consume the space we printed
+                }
+                continue;
+            }
+
+            // Overlong word → character wrap on current line(s)
+            const char *q = wstart;
+            while (q < wend && cur_y + gh <= y_end) {
+                if (cur_x + adv > x_end) {
+                    cur_x = x;
+                    cur_y += ladv;
+                    if (cur_y + gh > y_end)
+                        break;
+                }
+                draw_glyph_scaled_nolock(d, f, cur_x, cur_y, (unsigned char)*q,
+                                         on, scale);
+                if (!touched) {
+                    bx0     = cur_x;
+                    by0     = cur_y;
+                    touched = true;
+                }
+                cur_x += adv;
+                int gx1 = cur_x - 1, gy1 = cur_y + gh - 1;
+                if (gx1 > bx1)
+                    bx1 = gx1;
+                if (gy1 > by1)
+                    by1 = gy1;
+                ++q;
+            }
+            if (*p == ' ')
+                ++p; // consume a single trailing space
+            continue;
+        }
+
+        // Word fits → print it
+        for (const char *q = wstart; q < wend; ++q) {
+            draw_glyph_scaled_nolock(d, f, cur_x, cur_y, (unsigned char)*q, on,
+                                     scale);
+            if (!touched) {
+                bx0     = cur_x;
+                by0     = cur_y;
+                touched = true;
+            }
+            cur_x += adv;
+        }
+        {
+            int gx1 = cur_x - 1, gy1 = cur_y + gh - 1;
+            if (gx1 > bx1)
+                bx1 = gx1;
+            if (gy1 > by1)
+                by1 = gy1;
+        }
+        // Print one trailing space if present and fits; else leave it for next
+        // iter
+        if (*p == ' ' && cur_x + adv <= x_end) {
+            draw_glyph_scaled_nolock(d, f, cur_x, cur_y, (unsigned char)' ', on,
+                                     scale);
+            cur_x += adv;
+            int gx1 = cur_x - 1, gy1 = cur_y + gh - 1;
+            if (!touched) {
+                bx0     = cur_x;
+                by0     = cur_y;
+                touched = true;
+            }
+            if (gx1 > bx1)
+                bx1 = gx1;
+            if (gy1 > by1)
+                by1 = gy1;
+            ++p; // consumed a printed space
+        }
+        // If the space doesn't fit, next loop wraps first.
+    }
+
+    if (touched)
+        mark_dirty(d, bx0, by0, bx1, by1);
     UNLOCK(d);
     return ESP_OK;
 }

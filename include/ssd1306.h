@@ -204,6 +204,41 @@ esp_err_t ssd1306_draw_text_scaled(ssd1306_handle_t h, int x, int y,
                                    const char *txt, bool on, int scale);
 
 /**
+ * @brief Draw ASCII text wrapped inside a rectangle.
+ *
+ * Word-wraps on spaces, falls back to character wrapping for overlong words,
+ * and honors '\n' as an explicit line break. Uses the current font and scale=1
+ * unless you pass a different scale.
+ *
+ * @param h     Display handle.
+ * @param x,y   Top-left of the wrapping rectangle.
+ * @param w,hgt Width and height of the wrapping rectangle (pixels).
+ * @param text  NUL-terminated ASCII string.
+ * @param on    true sets pixels, false clears them.
+ * @return ESP_OK on success.
+ */
+esp_err_t ssd1306_draw_text_wrapped(ssd1306_handle_t h, int x, int y, int w,
+                                    int hgt, const char *text, bool on);
+/**
+ * @brief Draw ASCII text wrapped inside a rectangle.
+ *
+ * Word-wraps on spaces, falls back to character wrapping for overlong words,
+ * and honors '\n' as an explicit line break. Uses the current font and scale=1
+ * unless you pass a different scale.
+ *
+ * @param h     Display handle.
+ * @param x,y   Top-left of the wrapping rectangle.
+ * @param w,hgt Width and height of the wrapping rectangle (pixels).
+ * @param text  NUL-terminated ASCII string.
+ * @param on    true sets pixels, false clears them.
+ * @param scale Integer scale factor.
+ * @return ESP_OK on success.
+ */
+esp_err_t ssd1306_draw_text_wrapped_scaled(ssd1306_handle_t h, int x, int y,
+                                           int w, int hgt, const char *text,
+                                           bool on, int scale);
+
+/**
  * @brief Send the current framebuffer to the display (flush).
  *
  * @param h Display handle.
