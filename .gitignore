@@ -6,6 +6,7 @@ __pycache__/
 
 # Build / output
 build*
+dist/
 CMakeFiles/
 compile_commands.json
 sdkconfig*
