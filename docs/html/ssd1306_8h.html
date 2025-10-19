@@ -164,6 +164,10 @@ Functions</h2></td></tr>
 <tr class="memdesc:a5afd8c5f30780e98c6e16273ab48b06b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draw ASCII text using the current font, scale = 1.  <br /></td></tr>
 <tr class="memitem:a42a9e19b6e4d9b077e38a8236e827f60" id="r_a42a9e19b6e4d9b077e38a8236e827f60"><td class="memItemLeft" align="right" valign="top">esp_err_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a42a9e19b6e4d9b077e38a8236e827f60">ssd1306_draw_text_scaled</a> (<a class="el" href="#acfc65c589b5122eb88446cdd37baeff4">ssd1306_handle_t</a> h, int x, int y, const char *txt, bool on, int scale)</td></tr>
 <tr class="memdesc:a42a9e19b6e4d9b077e38a8236e827f60"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draw ASCII text with specified integer scale factor.  <br /></td></tr>
+<tr class="memitem:a6875da1852b4f3d688593eb3463756ae" id="r_a6875da1852b4f3d688593eb3463756ae"><td class="memItemLeft" align="right" valign="top">esp_err_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6875da1852b4f3d688593eb3463756ae">ssd1306_draw_text_wrapped</a> (<a class="el" href="#acfc65c589b5122eb88446cdd37baeff4">ssd1306_handle_t</a> h, int x, int y, int w, int hgt, const char *text, bool on)</td></tr>
+<tr class="memdesc:a6875da1852b4f3d688593eb3463756ae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draw ASCII text wrapped inside a rectangle.  <br /></td></tr>
+<tr class="memitem:a500f621fff2a79fcde600bf75e08dfd1" id="r_a500f621fff2a79fcde600bf75e08dfd1"><td class="memItemLeft" align="right" valign="top">esp_err_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a500f621fff2a79fcde600bf75e08dfd1">ssd1306_draw_text_wrapped_scaled</a> (<a class="el" href="#acfc65c589b5122eb88446cdd37baeff4">ssd1306_handle_t</a> h, int x, int y, int w, int hgt, const char *text, bool on, int scale)</td></tr>
+<tr class="memdesc:a500f621fff2a79fcde600bf75e08dfd1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Draw ASCII text wrapped inside a rectangle.  <br /></td></tr>
 <tr class="memitem:a4e2cbdf57ae5786dc907b44c0b99e41a" id="r_a4e2cbdf57ae5786dc907b44c0b99e41a"><td class="memItemLeft" align="right" valign="top">esp_err_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4e2cbdf57ae5786dc907b44c0b99e41a">ssd1306_display</a> (<a class="el" href="#acfc65c589b5122eb88446cdd37baeff4">ssd1306_handle_t</a> h)</td></tr>
 <tr class="memdesc:a4e2cbdf57ae5786dc907b44c0b99e41a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Send the current framebuffer to the display (flush).  <br /></td></tr>
 </table>
@@ -584,6 +588,134 @@ Functions</h2></td></tr>
     <tr><td class="paramname">y</td><td>Top left Y-coordinate. </td></tr>
     <tr><td class="paramname">text</td><td>Text to be displayed. </td></tr>
     <tr><td class="paramname">on</td><td>true to set pixel, false to clear. </td></tr>
+    <tr><td class="paramname">scale</td><td>Integer scale factor. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>ESP_OK on success. </dd></dl>
+
+</div>
+</div>
+<a id="a6875da1852b4f3d688593eb3463756ae" name="a6875da1852b4f3d688593eb3463756ae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6875da1852b4f3d688593eb3463756ae">&#9670;&#160;</a></span>ssd1306_draw_text_wrapped()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">esp_err_t ssd1306_draw_text_wrapped </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="#acfc65c589b5122eb88446cdd37baeff4">ssd1306_handle_t</a></td>          <td class="paramname"><span class="paramname"><em>h</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>x</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>y</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>w</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>hgt</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>text</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>on</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Draw ASCII text wrapped inside a rectangle. </p>
+<p>Word-wraps on spaces, falls back to character wrapping for overlong words, and honors '<br  />
+' as an explicit line break. Uses the current font and scale=1 unless you pass a different scale.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">h</td><td>Display handle. </td></tr>
+    <tr><td class="paramname">x,y</td><td>Top-left of the wrapping rectangle. </td></tr>
+    <tr><td class="paramname">w,hgt</td><td>Width and height of the wrapping rectangle (pixels). </td></tr>
+    <tr><td class="paramname">text</td><td>NUL-terminated ASCII string. </td></tr>
+    <tr><td class="paramname">on</td><td>true sets pixels, false clears them. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>ESP_OK on success. </dd></dl>
+
+</div>
+</div>
+<a id="a500f621fff2a79fcde600bf75e08dfd1" name="a500f621fff2a79fcde600bf75e08dfd1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a500f621fff2a79fcde600bf75e08dfd1">&#9670;&#160;</a></span>ssd1306_draw_text_wrapped_scaled()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">esp_err_t ssd1306_draw_text_wrapped_scaled </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="#acfc65c589b5122eb88446cdd37baeff4">ssd1306_handle_t</a></td>          <td class="paramname"><span class="paramname"><em>h</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>x</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>y</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>w</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>hgt</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>text</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>on</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">int</td>          <td class="paramname"><span class="paramname"><em>scale</em></span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Draw ASCII text wrapped inside a rectangle. </p>
+<p>Word-wraps on spaces, falls back to character wrapping for overlong words, and honors '<br  />
+' as an explicit line break. Uses the current font and scale=1 unless you pass a different scale.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">h</td><td>Display handle. </td></tr>
+    <tr><td class="paramname">x,y</td><td>Top-left of the wrapping rectangle. </td></tr>
+    <tr><td class="paramname">w,hgt</td><td>Width and height of the wrapping rectangle (pixels). </td></tr>
+    <tr><td class="paramname">text</td><td>NUL-terminated ASCII string. </td></tr>
+    <tr><td class="paramname">on</td><td>true sets pixels, false clears them. </td></tr>
     <tr><td class="paramname">scale</td><td>Integer scale factor. </td></tr>
   </table>
   </dd>

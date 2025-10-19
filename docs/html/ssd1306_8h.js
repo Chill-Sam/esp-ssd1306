@@ -18,6 +18,8 @@ var ssd1306_8h =
     [ "ssd1306_draw_rect", "ssd1306_8h.html#a27752282f59000e6c3832b7926c35fed", null ],
     [ "ssd1306_draw_text", "ssd1306_8h.html#a5afd8c5f30780e98c6e16273ab48b06b", null ],
     [ "ssd1306_draw_text_scaled", "ssd1306_8h.html#a42a9e19b6e4d9b077e38a8236e827f60", null ],
+    [ "ssd1306_draw_text_wrapped", "ssd1306_8h.html#a6875da1852b4f3d688593eb3463756ae", null ],
+    [ "ssd1306_draw_text_wrapped_scaled", "ssd1306_8h.html#a500f621fff2a79fcde600bf75e08dfd1", null ],
     [ "ssd1306_new_i2c", "ssd1306_8h.html#a29a7514d3075573675a25e2c3f16d93f", null ],
     [ "ssd1306_new_spi", "ssd1306_8h.html#a275c3167fbb134793e4ed8937d464b35", null ],
     [ "ssd1306_set_font", "ssd1306_8h.html#acb6919e3b424f3fc550aabf2c4b23610", null ]
