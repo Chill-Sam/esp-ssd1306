@@ -1,4 +1,4 @@
-version: "1.1.0"
+version: "1.1.1"
 description: "SSD1306 OLED driver for ESP-IDF"
 url: "https://github.com/Chill-Sam/esp-ssd1306"
 targets: [esp32, esp32s2, esp32s3, esp32c3]
