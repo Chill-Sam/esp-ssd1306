@@ -44,6 +44,9 @@ ssd1306_draw_text(disp, 0, 0, "SSD1306 I2C", true);
 ssd1306_display(disp);
 ```
 
+## Note
+The driver assumes that I2C is initialized to synchronous mode and will break in async mode.
+
 ## License
 
 MIT License © 2025 Jonathan Wåhrenberg.
